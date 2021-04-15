@@ -10,6 +10,8 @@ public interface TodoRepository extends MongoRepository<Todo, String> {
 
     List<Todo> findByResponsible(User responsible);
 
+    List<Todo> findAll();
+
 }
 
 

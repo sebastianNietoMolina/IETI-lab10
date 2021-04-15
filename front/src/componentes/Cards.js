@@ -22,10 +22,13 @@ export class Cards extends React.Component{
                             {this.description}
                         </Typography><br/>
                         <Typography variant="h6" component="h1">
-                            {this.status+" - "}{this.dueDate}
+                            {this.status+" ----> "}{this.dueDate}
                         </Typography><br/>
                         <Typography variant="h6" component="h1">
                             {this.name}
+                        </Typography>
+                        <Typography variant="h6" component="h1">
+                            {this.props.action.fileUrl ? <img src={this.props.action.fileUrl} /> : <div/>}
                         </Typography>
                     </div>
                 </CardContent>

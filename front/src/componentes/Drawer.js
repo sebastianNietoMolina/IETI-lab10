@@ -30,7 +30,11 @@ const ProfileView = () => (
 export class DrawerLogin extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {left: false, open: false, description: '', responsable: '', state: '', dueDate: '', user: [], file: null}
+        this.getTodoData()
+        this.state = {
+            left: false, open: false, description: '', responsable: '',
+            state: '', dueDate: '', user: [], file: null, urlFile: ''
+        }
         this.handleClose = this.handleClose.bind(this)
         this.handleOpen = this.handleOpen.bind(this)
         this.handleDescription = this.handleDescription.bind(this)
@@ -46,7 +50,7 @@ export class DrawerLogin extends React.Component {
     handleInputChange(e) {
         this.setState({
             file: e.target.files[0]
-        });                
+        });
     }
 
     handleCloseEdit() {
@@ -61,33 +65,64 @@ export class DrawerLogin extends React.Component {
         })
     }
 
-    handleSave() {
+    postImage = () => {
+        let data = new FormData();
+        data.append('file', this.state.file);
+
+        axios.post('http://localhost:8080/api/files', data)
+            .then(response => {
+                console.log("file uploaded!", response.data);
+                this.setState({
+                    urlFile: response.data
+                });
+                this.postTodoData();
+            })
+            .catch(error => {
+                console.log("failed file upload", error);
+                return error
+            });
+    }
+
+    postTodoData = async () => {
         const newItem = {
             description: this.state.description,
+            priority: 5,
+            dueDate: this.state.dueDate,
             responsible: {
                 name: this.state.responsable,
                 email: "juan@gmail.com"
             },
             status: this.state.state,
-            dueDate: this.state.dueDate
+            fileUrl: this.state.urlFile
         }
 
-        let data = new FormData();
-        data.append('file', this.state.file);
+        await axios.post('http://localhost:8080/api/todo', newItem)
+            .then(response => {
+                console.log("file uploaded!", response);
+                console.log(response);
+                this.getTodoData()
+            })
+            .catch(error => {
+                console.log("failed file upload", error);
+            });
+    }
 
-        axios.post('http://localhost:8080/api/files', data)
-            .then(function (response) {
-                console.log("file uploaded!", data);
-        })
-        .catch(function (error) {
-            console.log("failed file upload", error);
-        });
+    getTodoData = async () => {
+        await axios.get('http://localhost:8080/api/todo')
+            .then(response => {
+                console.log("files returned!", response);
+                console.log(response);
+                this.setState({
+                    user: response.data
+                })
+            })
+            .catch(error => {
+                console.log("failed file geted", error);
+            });
+    }
 
-        this.setState({
-            user: this.state.user.concat(newItem)
-        })
-
-
+    handleSave() {
+        this.postImage();
         this.handleClose()
     }
 
@@ -128,7 +163,7 @@ export class DrawerLogin extends React.Component {
     }
 
     render() {
-
+        
         const toggleDrawer = (open) => (event) => {
             if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
                 return;
@@ -206,15 +241,15 @@ export class DrawerLogin extends React.Component {
                 <FormControl margin="normal" required fullWidth onChange={this.handleDueDate}>
                     <Input id="date" name="date" type="date" />
                 </FormControl>
-                <FormControl margin="normal" required fullWidth onChange={this.handleDueDate}>
-                    <Input type="file" id="file" onChange={this.handleInputChange}/>
+                <FormControl margin="normal" required fullWidth onChange={this.handleInputChange}>
+                    <Input type="file" id="file" />
                 </FormControl>
             </div>
         );
 
         return (
             <div>
-                <React.Fragment key="left">
+                <React.Fragment key="left" >
                     <Toolbar>
                         <Drawer anchor="left" open={this.state.left} onClose={toggleDrawer(false)}>
                             {list}
@@ -244,9 +279,9 @@ export class DrawerLogin extends React.Component {
                         timeout: 500,
                     }}
                 >
-                    <div style={{ backgroundColor: 'white', border: '2px solid #000', textAlign: 'center', width: 450 }}>
+                    <div style={{ backgroundColor: 'white', border: '2px solid #000', textAlign: 'center', width: 450 }} >
                         {addInformation}
-                        <Button style={{ marginLeft: '55vh' }} onClick={this.handleSave}>
+                        <Button style={{ marginLeft: '55vh' }} onClick={this.handleSave} >
                             <Avatar>
                                 <CheckIcon style={{ color: "red" }} />
                             </Avatar>
@@ -269,7 +304,7 @@ export class DrawerLogin extends React.Component {
                         timeout: 500,
                     }}
                 >
-                    <UserProfile close={this.handleCloseEdit}/>
+                    <UserProfile close={this.handleCloseEdit} />
                 </Modal>
             </div>
         );

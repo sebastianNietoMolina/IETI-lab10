@@ -62,14 +62,20 @@ public class RESTController {
     @PostMapping("/todo")
     public Todo createTodo(@RequestBody Todo todo) {
         //TODO implement method
-        return null;
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("comprobando ome");
+        System.out.println(todo.getFileUrl());
+        todoRepository.insert(todo);
+        return todo;
     }
 
     @CrossOrigin("*")
     @GetMapping("/todo")
     public List<Todo> getTodoList() {
         //TODO implement method
-        return null;
+        return todoRepository.findAll();
     }
 
 }
