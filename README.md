@@ -6,6 +6,16 @@ Create Spring Boot API that allows uploading and serving files.
   Contraseña: prueba
 ```
 
+## Parte 1
+![](fotos/uno.PNG)
+
+## Parte 2
+![](fotos/dos.PNG)
+![](fotos/tres.PNG)
+
+## Parte 3
+![](fotos/cuatro.PNG)
+
 ## Part 1: Implement a File uploader API
 
 1. Clone this project and change the Database configuration with your own connection string in the following file:
